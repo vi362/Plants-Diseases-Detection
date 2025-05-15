@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PlantX - Smart Agriculture</title>
+  <link rel="stylesheet" href="/static/stylew.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  
+
+
+</head>
+<body>
+<header class="hero-section">
+  <div class="top-bar">
+  <div class="logo-wrapper">
+    <img src="/static/hath.png" alt="PlantX Logo" class="logo1" />
+    <div class="logo-text">PlantX</div>
+  </div>
+</div>
+
+
+    <div class="navbar">
+      <div class="logo-title">🌿 PlantX</div>
+      <nav class="curved-links">
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    
+
+
+    <div class="hero-content">
+      <h1 class="main-title">AI-Powered Plant Disease Detection</h1>
+      <p class="subtitle">Detect plant leaf diseases and calculate infected area.</p>
+      <a href="index" class="btn-primary">🚀 Get Started</a>
+    </div>
+  </header>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" class="content-section">
+    <h2>About PlantX</h2>
+    
+
+    <p class="about-text">
+      PlantX is an innovative AI-driven platform that leverages the power of advanced computer vision and deep learning techniques to help farmers 
+        and agricultural researchers identify plant diseases at an early stage. Early detection of diseases is crucial for mitigating crop losses, 
+        reducing the use of pesticides, and improving overall crop health. PlantX uses state-of-the-art Convocational Neural Networks (CNNs), 
+        a specialized type of deep learning algorithm, to analyze images of plant leaves. These images, taken using a simple smartphone or camera, 
+        are uploaded to the platform for analysis. Through this process, the system is able to quickly and accurately identify disease symptoms, 
+        which may be difficult to detect with the naked eye, especially in the early stages.
+        The platform works by processing the uploaded plant images through a trained CNN model that has been specifically designed to recognize a 
+        wide range of plant diseases. The AI model has been trained on thousands of images, learning to differentiate between various types of 
+        diseases by looking at subtle patterns and anomalies in the leaf structure, color, and texture. Once the image is analyzed, PlantX provides 
+        the user with a clear diagnosis, detailing the type of disease present on the plant. This feature is invaluable to farmers, as it allows them 
+        to act swiftly and take preventive measures before the disease spreads further.
+        In addition to disease identification, PlantX offers another powerful feature: the assessment of infection severity. The platform calculates the
+        extent of the infection, often measured in terms of the percentage of the leaf area affected. This allows farmers to better understand the level
+        of threat posed by the disease and make informed decisions on the most appropriate course of action. By having accurate and detailed information 
+        about the severity of the infection, farmers can determine whether intervention is needed immediately or if the disease can be managed with minimal
+        intervention. This data-driven approach to disease management helps optimize pesticide usage, reducing unnecessary chemical applications and promoting 
+        more sustainable farming practices.
+        Accessible through both web and mobile interfaces, PlantX is designed with ease of use in mind. Its user-friendly interface ensures that farmers of all 
+        experience levels can navigate the system effortlessly. Whether you are a small-scale farmer in a rural area or an agricultural researcher in a laboratory, 
+        PlantX provides a simple, yet powerful tool for diagnosing and managing plant diseases. The platform’s ability to empower users with early disease detection 
+        and actionable insights contributes to smarter, more efficient farming, ultimately leading to improved crop yields and reduced environmental impact. 
+        PlantX is more than just a tool for disease detection; it is a step toward building a smarter and more sustainable agricultural future.
+    </p>
+  </section>
+
+  <!-- SERVICES SECTION -->
+  <section id="services" class="content-section">
+    <h2>Our Services</h2>
+    <ul class="services-list">
+      <li>🌱 Real-time Disease Detection</li>
+      <li>🧪 Infected Area Measurement</li>
+      <li>📊 Health Reports & Analysis</li>
+      <li>📷 Annotated Image Downloads</li>
+    </ul>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section id="contact" class="content-section">
+    <h2>Contact Us</h2>
+    <p>Email: plantxsupport@gmail.com</p>
+    <p>Phone: +91-9876543210</p>
+    <p><strong>Follow us on:</strong></p>
+    <button onclick="openPopup()" class="popup-btn">Follow Us</button>
+  </section>
+
+  <!-- BACK BUTTON -->
+  <div style="text-align: center; margin: 30px 0;">
+    <a href="#" class="back-to-top">← Back to Top</a>
+  </div>
+
+  <!-- POPUP -->
+  <div id="socialPopup" class="popup-overlay">
+    <div class="popup-content">
+      <span class="close-btn" onclick="closePopup()">&times;</span>
+      <h3>Follow Us On</h3>
+      <div class="social-links">
+        <a href="https://www.youtube.com/plantix" target="_blank">
+                <img src="\static\you.png" alt="YouTube"> YouTube
+              </a>
+              <a href="https://www.facebook.com/plantix" target="_blank">
+                <img src="\static\face.png" alt="Facebook"> Facebook
+              </a>
+              <a href="https://www.instagram.com/plantix" target="_blank">
+                <img src="\static\inst.png" alt="Instagram"> Instagram
+              </a>
+              <a href="https://www.x.com/plantix" target="_blank">
+                <img src="\static\x.png" alt="X"> X
+              </a>
+              <a href="https://www.linkedin.com/plantix" target="_blank">
+                <img src="\static\lin.png" alt="LinkedIn"> LinkedIn
+      </div>
+    </div>
+  </div>
+
+  
+
+  <script>
+    function openPopup() {
+      document.getElementById("socialPopup").style.display = "flex";
+    }
+
+    function closePopup() {
+      document.getElementById("socialPopup").style.display = "none";
+    }
+  </script>
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 PlantX. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

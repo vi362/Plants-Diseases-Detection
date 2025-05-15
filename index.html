@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PlantX</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <div class="logo-container">
+                <a href="/" class="back-arrow">&#8592;</a>
+                <img src="/static/hath.png" alt="PlantX Logo" class="logo">
+                <p class="company-name">PlantX</p>
+            </div>
+        </div>
+
+        <div class="main">
+            <h1 id="main-title">PLANT LEAF DISEASES DETECTION AND INFECTED AREA CALCULATOR</h1>
+
+            <div class="upload-section">
+                <h2>Upload Leaf Image for Disease Inspection</h2>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <input type="file" name="leafImage" id="leafImage" accept="image/*" required>
+                    <button type="submit">Submit</button>
+                </form>
+
+                <div id="action-buttons" style="display:none;">
+                    <button class="action-btn" onclick="detectDisease()">Detect Disease</button>
+                    <button class="action-btn" onclick="calculateArea()">Calculate Infected Area</button>
+
+                    <div class="results">
+                        <p><strong>Disease:</strong> <span id="diseaseName">N/A</span></p>
+                        <p><strong>Infected Area:</strong> <span id="areaValue">0</span> cm²</p>
+                        <p><strong>Infected Percentage:</strong> <span id="percentValue">0%</span></p>
+                        <img id="markedImage" src="" alt="Marked Infected Image" style="max-width: 300px; margin: 10px auto; display: none;">
+                        <a href="#" id="downloadReport" download style="display:none;" class="download-btn">Download Report</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+   <script>
+let predictionData = null;  // Global variable to store server response
+
+document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    const fileInput = document.getElementById("leafImage");
+    formData.append("file", fileInput.files[0]);
+
+    try {
+        const response = await fetch("http://localhost:8000/predict", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) throw new Error("Prediction failed");
+        const data = await response.json();
+        predictionData = data;  // Save for later button clicks
+
+        // Hide all result fields initially
+        document.getElementById("diseaseName").innerText = "N/A";
+        document.getElementById("areaValue").innerText = "0";
+        document.getElementById("percentValue").innerText = "0%";
+
+        document.getElementById("main-title").style.display = "none";
+        document.getElementById("action-buttons").style.display = "flex";
+    } catch (error) {
+        alert("Error: " + error.message);
+    }
+});
+
+function detectDisease() {
+    if (predictionData) {
+        document.getElementById("diseaseName").innerText = predictionData.predicted_disease;
+    } else {
+        alert("Please upload an image first.");
+    }
+}
+
+function calculateArea() {
+    if (predictionData) {
+        document.getElementById("areaValue").innerText = predictionData.infected_area_cm2;
+        document.getElementById("percentValue").innerText = predictionData.infected_percentage + "%";
+    } else {
+        alert("Please upload an image first.");
+    }
+}
+</script>
+
+</body>
+</html>
