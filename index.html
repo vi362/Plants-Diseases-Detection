@@ -3,17 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>PlantX</title>
-    <link rel="stylesheet" href="style.css">
-
-
+    <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        #imagePreviewContainer {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        #imagePreviewContainer div {
+            text-align: center;
+        }
+        #imagePreviewContainer img {
+            max-width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgb(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="top-bar">
             <div class="logo-container">
-                <a href="/home.html" class="back-arrow">&#8592;</a>
-                <img src="hath.png" alt="PlantX Logo" class="logo">
+                <a href="/" class="back-arrow">&#8592;</a>
+                <img src="/static/hath.png" alt="PlantX Logo" class="logo">
                 <p class="company-name">PlantX</p>
             </div>
         </div>
@@ -23,76 +37,184 @@
 
             <div class="upload-section">
                 <h2>Upload Leaf Image for Disease Inspection</h2>
-                <form id="uploadForm" enctype="multipart/form-data">
-                    <input type="file" name="leafImage" id="leafImage" accept="image/*" required>
+                <form id="uploadForm" action="http://localhost:8000/predict" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" id="leafImage" accept="image/*" required>
                     <button type="submit">Submit</button>
                 </form>
 
-                <div id="action-buttons" style="display:none;">
+                <div id="imagePreviewContainer" style="margin-top: 20px;">
+                    <div>
+                        <h4>Uploaded Image</h4>
+                        <img id="uploadedImagePreview" src="" alt="Uploaded Image">
+                    </div>
+                    <div>
+                        <h4>Marked Image</h4>
+                        <img id="markedImage" src="" alt="Marked Image">
+                    </div>
+                </div>
+
+                <div id="action-buttons" style="display:none; margin-top: 20px;">
                     <button class="action-btn" onclick="detectDisease()">Detect Disease</button>
                     <button class="action-btn" onclick="calculateArea()">Calculate Infected Area</button>
+                    <button class="action-btn" onclick="showRemedies()">Show Remedies</button>
+                    <button class="action-btn" onclick="downloadReport()">Download PDF Report</button>
 
                     <div class="results">
                         <p><strong>Disease:</strong> <span id="diseaseName">N/A</span></p>
                         <p><strong>Infected Area:</strong> <span id="areaValue">0</span> cm²</p>
                         <p><strong>Infected Percentage:</strong> <span id="percentValue">0%</span></p>
-                        <img id="markedImage" src="" alt="Marked Infected Image" style="max-width: 300px; margin: 10px auto; display: none;">
-                        <a href="#" id="downloadReport" download style="display:none;" class="download-btn">Download Report</a>
+                        <a href="#" id="downloadReport" download style="display:none;" class="download-btn">Download Marked Image</a>
+                    </div>
+
+                    <div id="remedies-section" style="display:none; background:white; color:black; margin-top:20px; padding:20px; border-radius:10px; text-align:left; max-width:500px;">
+                        <h3>Remedy Information</h3>
+                        <p><strong>Brief Info:</strong> <span id="briefInfo">N/A</span></p>
+                        <p><strong>Remedies:</strong> <span id="remediesList">N/A</span></p>
+                        <p><strong>Pesticides:</strong> <span id="pesticidesList">N/A</span></p>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-   <script>
-let predictionData = null;  // Global variable to store server response
+    <script>
+    let predictionData = null;
 
-document.getElementById("uploadForm").addEventListener("submit", async function(e) {
-    e.preventDefault();
+    document.getElementById("uploadForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
 
-    const formData = new FormData();
-    const fileInput = document.getElementById("leafImage");
-    formData.append("file", fileInput.files[0]);
+        const formData = new FormData();
+        const fileInput = document.getElementById("leafImage");
+        const file = fileInput.files[0];
+        formData.append("file", file);
 
-    try {
-        const response = await fetch("http://localhost:8000/predict", {
+        const previewImg = document.getElementById("uploadedImagePreview");
+        if (file) {
+            previewImg.src = URL.createObjectURL(file);
+            previewImg.style.display = "block";
+        }
+
+        try {
+            const response = await fetch("http://localhost:8000/predict", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) throw new Error("Prediction failed");
+            const data = await response.json();
+            predictionData = data;
+
+            document.getElementById("main-title").style.display = "none";
+            document.getElementById("action-buttons").style.display = "flex";
+
+            document.getElementById("markedImage").src = data.marked_image_url;
+            document.getElementById("markedImage").style.display = "block";
+            document.getElementById("downloadReport").href = data.marked_image_url;
+            document.getElementById("downloadReport").style.display = "inline-block";
+
+            document.getElementById("diseaseName").innerText = "N/A";
+            document.getElementById("areaValue").innerText = "0";
+            document.getElementById("percentValue").innerText = "0%";
+
+        } catch (error) {
+            alert("Error: " + error.message);
+        }
+    });
+
+    document.getElementById("leafImage").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgPreview = document.getElementById("uploadedImagePreview");
+                imgPreview.src = e.target.result;
+                imgPreview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function detectDisease() {
+        if (predictionData) {
+            document.getElementById("diseaseName").innerText = predictionData.predicted_disease;
+        } else {
+            alert("Please upload an image first.");
+        }
+    }
+
+    function calculateArea() {
+        if (predictionData) {
+            document.getElementById("areaValue").innerText = predictionData.infected_area_cm2;
+            document.getElementById("percentValue").innerText = predictionData.infected_percentage + "%";
+        } else {
+            alert("Please upload an image first.");
+        }
+    }
+
+    async function showRemedies() {
+        if (!predictionData) {
+            alert("Please upload an image and detect disease first.");
+            return;
+        }
+
+        try {
+            const diseaseName = predictionData.predicted_disease;
+            const response = await fetch(`http://localhost:8000/get-remedy?disease=${encodeURIComponent(diseaseName)}`);
+            const data = await response.json();
+
+            document.getElementById("briefInfo").innerText = data.brief;
+            document.getElementById("remediesList").innerText = data.remedies;
+            document.getElementById("pesticidesList").innerText = data.pesticides;
+
+            document.getElementById("remedies-section").style.display = "block";
+        } catch (error) {
+            alert("Failed to fetch remedies: " + error.message);
+        }
+    }
+
+    async function downloadReport() {
+        if (!predictionData) {
+            alert("Please upload an image and detect disease first.");
+            return;
+        }
+
+        const reportData = {
+            disease: predictionData.predicted_disease,
+            area_cm2: predictionData.infected_area_cm2,
+            percentage: predictionData.infected_percentage,
+            image_url: predictionData.marked_image_path,
+            image_path: predictionData.image_path,
+            brief: document.getElementById("briefInfo").innerText,
+            remedies: document.getElementById("remediesList").innerText,
+            pesticides: document.getElementById("pesticidesList").innerText
+        };
+
+        const response = await fetch("http://localhost:8000/generate-report", {
             method: "POST",
-            body: formData
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(reportData)
         });
 
-        if (!response.ok) throw new Error("Prediction failed");
-        const data = await response.json();
-        predictionData = data;  // Save for later button clicks
+        if (!response.ok) {
+            alert("Error: PDF generation failed");
+            return;
+        }
 
-        // Hide all result fields initially
-        document.getElementById("diseaseName").innerText = "N/A";
-        document.getElementById("areaValue").innerText = "0";
-        document.getElementById("percentValue").innerText = "0%";
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
 
-        document.getElementById("main-title").style.display = "none";
-        document.getElementById("action-buttons").style.display = "flex";
-    } catch (error) {
-        alert("Error: " + error.message);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "PlantX_Report.pdf";
+        a.click();
+        URL.revokeObjectURL(url);
     }
-});
+    </script>
 
-function detectDisease() {
-    if (predictionData) {
-        document.getElementById("diseaseName").innerText = predictionData.predicted_disease;
-    } else {
-        alert("Please upload an image first.");
-    }
-}
-
-function calculateArea() {
-    if (predictionData) {
-        document.getElementById("areaValue").innerText = predictionData.infected_area_cm2;
-        document.getElementById("percentValue").innerText = predictionData.infected_percentage + "%";
-    } else {
-        alert("Please upload an image first.");
-    }
-}
-</script>
-
+    <footer>
+        <p>© 2025 PlantX. All rights reserved.</p>
+    </footer>
 </body>
 </html>
