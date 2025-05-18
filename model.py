@@ -38,8 +38,7 @@ def ConvBlock(in_channels, out_channels, pool=False):
     if pool:
         layers.append(nn.MaxPool2d(4))
     return nn.Sequential(*layers)
-in_features = 512
-out_features = 38
+
 class CNN_NeuralNet(ImageClassificationBase):
     def __init__(self, in_channels=3, num_classes=38):
         super().__init__()
@@ -50,10 +49,10 @@ class CNN_NeuralNet(ImageClassificationBase):
         self.conv4 = ConvBlock(256, 512, pool=True)
         self.res2 = nn.Sequential(ConvBlock(512, 512), ConvBlock(512, 512))
         self.classifier = nn.Sequential(
-            nn.MaxPool2d(kernel_size=2, stride=1, padding=1),
-            nn.Flatten(),
-            nn.Linear(8192, num_classes)
-        )
+                    nn.AdaptiveAvgPool2d((1, 1)),  # Ensures output is [B, 512, 1, 1]
+                    nn.Flatten(),                  # -> [B, 512]
+                    nn.Linear(512, num_classes)
+                    )
 
     def forward(self, x):
         out = self.conv1(x)
