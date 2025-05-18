@@ -4,21 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PlantX - Smart Agriculture</title>
-  <link rel="stylesheet" href="stylew.css"/>
+  <link rel="stylesheet" href="/static/stylew.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
-  
-
-
 </head>
 <body>
 <header class="hero-section">
   <div class="top-bar">
   <div class="logo-wrapper">
-    <img src="hath.png" alt="PlantX Logo" class="logo1" />
+    <img src="/static/hath.png" alt="PlantX Logo" class="logo1" />
     <div class="logo-text">PlantX</div>
   </div>
 </div>
-
 
     <div class="navbar">
       <div class="logo-title">🌿 PlantX</div>
@@ -29,19 +25,16 @@
       </nav>
     </div>
     
-
-
     <div class="hero-content">
       <h1 class="main-title">AI-Powered Plant Disease Detection</h1>
       <p class="subtitle">Detect plant leaf diseases and calculate infected area.</p>
-      <a href="/index.html" class="btn-primary">🚀 Get Started</a>
+      <a href="/index" class="btn-primary">🚀 Get Started</a>
     </div>
   </header>
 
   <!-- ABOUT SECTION -->
   <section id="about" class="content-section">
     <h2>About PlantX</h2>
-    
 
     <p class="about-text">
       PlantX is an innovative AI-driven platform that leverages the power of advanced computer vision and deep learning techniques to help farmers 
@@ -101,24 +94,22 @@
       <h3>Follow Us On</h3>
       <div class="social-links">
         <a href="https://www.youtube.com/plantix" target="_blank">
-                <img src="you.png" alt="YouTube"> YouTube
+                <img src="\static\you.png" alt="YouTube"> YouTube
               </a>
               <a href="https://www.facebook.com/plantix" target="_blank">
-                <img src="face.png" alt="Facebook"> Facebook
+                <img src="\static\face.png" alt="Facebook"> Facebook
               </a>
               <a href="https://www.instagram.com/plantix" target="_blank">
-                <img src="inst.png" alt="Instagram"> Instagram
+                <img src="\static\inst.png" alt="Instagram"> Instagram
               </a>
               <a href="https://www.x.com/plantix" target="_blank">
-                <img src="x.png" alt="X"> X
+                <img src="\static\x.png" alt="X"> X
               </a>
               <a href="https://www.linkedin.com/plantix" target="_blank">
-                <img src="lin.png" alt="LinkedIn"> LinkedIn
+                <img src="\static\lin.png" alt="LinkedIn"> LinkedIn
       </div>
     </div>
   </div>
-
-  
 
   <script>
     function openPopup() {
@@ -129,6 +120,30 @@
       document.getElementById("socialPopup").style.display = "none";
     }
   </script>
+
+  <script>
+    const access = sessionStorage.getItem("access");
+    async function secureFetch(url, opts = {}) {
+      const res = await fetch(url, {
+        ...opts,
+        headers: { ...(opts.headers || {}), Authorization: `Bearer ${access}` },
+        credentials: "include" // send refresh cookie
+      });
+      if (res.status === 401) {
+        // try refresh once
+        const r = await fetch("/auth/refresh", { method: "POST", credentials: "include" });
+        if (r.ok) {
+          const { access: newToken } = await r.json();
+          sessionStorage.setItem("access", newToken);
+          return secureFetch(url, opts); // retry original request
+        } else {
+          window.location.href = "auth.html"; // redirect to login
+        }
+      }
+      return res;
+    }
+  </script>
+
   <!-- FOOTER -->
   <footer>
     <p>© 2025 PlantX. All rights reserved.</p>
