@@ -99,7 +99,7 @@ with open("D:\\My_Projects\\package\\diseases.json", "r") as f:
     disease_data = json.load(f)
 
 # Load trained PyTorch model
-model_path = os.path.join(os.path.dirname(__file__), "model_Plant_Diseases.pth")
+model_path = os.path.join(os.path.dirname(__file__), "mobilenet_model.pth")
 model = CNN_NeuralNet(in_channels=3, num_classes=38)
 
 checkpoint = torch.load(model_path, map_location="cpu")
