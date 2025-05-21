@@ -5,3 +5,7 @@ fastapi
 uvicorn
 jinja2
 pillow
+reportlab
+fpdf
+passlib
+python-multipart
